@@ -1,5 +1,5 @@
 USE employee_db
-SELECT role_id, role.title, role.salary, departmentname AS department
+SELECT role_id, role.title, role.salary, department.name AS department
 FROM role
 JOIN department
 ON role.department_id = department.id;
