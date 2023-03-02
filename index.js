@@ -44,21 +44,47 @@ function allDepartments() {
         initialQ();
     })
 };
+function updateEmployeeRole() {
+    db.query("SELECT * FROM employee", (err, results) => {
+      if (err) throw err;
 
-// function updateEmployeeRole() {
-//     db.query('Update * FROM employee role_id', (err, res) => {
-//         if (err) throw err;
-//         console.table(res);
-//         initialQ();
-//     })
-// };
-// function addDepartment() {
-//     db.query('INSERT INTO department (name) VALUES (?)',(err, res) => {
-//         if (err) throw err;
-//         console.table(res);
-//         initialQ();
-//     })
-// };
+      const employeeList = results.map((employee) => ({
+        name: `${employee.first_name} ${employee.last_name}`,
+        value: employee.id,
+      }));
+  
+      
+      inquirer
+        .prompt([
+          {
+            type: "list",
+            message: "Which employee's role do you want to update?",
+            name: "employeeId",
+            choices: employeeList,
+          },
+          {
+            type: "input",
+            message: "Enter the new role ID:",
+            name: "newRoleId",
+          },
+        ])
+        .then((answers) => {
+          const { employeeId, newRoleId } = answers;
+  
+          // Update the employee's role in the database
+          db.query(
+            `UPDATE employee SET role_id = ? WHERE id = ?`,
+            [newRoleId, employeeId],
+            (err, results) => {
+              if (err) throw err;
+              console.log(`Employee's role updated successfully!`);
+              initialQ();
+            }
+          );
+        });
+    });
+  }
+
 
 
 function initialQ () {
