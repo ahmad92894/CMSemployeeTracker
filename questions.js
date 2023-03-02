@@ -1,32 +1,10 @@
-const inquirer = require('inquirer');
-const fs=require('fs');
-const initialQuestion = require('./initialQuestions')
+const question = [
+    {
+       type: 'list',
+     message: 'What would you like to do?',
+     choices: ["View All Employees", "View All Roles", "View All Departments", "Update Employee Role", "Add Employee", "Add Role", "Add Department", "Quit", "Want to try again?"],
+     name: 'option' 
+    },
 
-// const initialQuestion = [
-//     {
-//        type: 'list',
-//      message: 'What would you like to do?',
-//      choices: ['View All Employees', "Add Employee", "Update Employee Role", "View All Roles", "Add Role", "View All Departments", "Add Department", "Quit", "want to try again"],
-//      name: 'option' 
-//     }
-// ]
-init();
-function init(){
-    initialQ();
-}
-
-function initialQ () {
-inquirer.prompt(initialQuestion)
-.then(ans=>{
-    console.log(ans);
-    // ans.option === "want to try again" ? initialQ() : process.exit();
-    switch (ans.option) {
-        case "want to try again":
-            initialQ()
-            break;
-    
-        default:
-            break;
-    }
-})
-}
+]
+module.exports = question;
