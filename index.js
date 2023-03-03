@@ -114,8 +114,18 @@ inquirer.prompt(question)
         case "Add a Role":
 
             break;
-        case "Add a Department":
-            addDepartment();
+        case 'Add a department':
+            inquirer.prompt({
+              type: 'input',
+              name: 'name',
+              message: 'What is the name of the department?'
+            }).then(({ name }) => {
+              db.query('INSERT INTO department SET ?', { name }, (err, results) => {
+                if (err) throw err;
+                console.log(`${results.affectedRows} department added.`);
+                startApp();
+              });
+            });
             break;
 
         default:
