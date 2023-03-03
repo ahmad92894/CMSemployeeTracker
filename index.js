@@ -6,7 +6,6 @@ const inquirer = require('inquirer');
 const db = mysql.createConnection(
     {
         host: '127.0.0.1',
-        // MySQL username,
         user: 'root',
         password: 'rootroot',
         database: 'employee_db'
@@ -52,9 +51,7 @@ function updateEmployeeRole() {
         name: `${employee.first_name} ${employee.last_name}`,
         value: employee.id,
       }));
-  
-      
-      inquirer
+        inquirer
         .prompt([
           {
             type: "list",
@@ -70,8 +67,6 @@ function updateEmployeeRole() {
         ])
         .then((answers) => {
           const { employeeId, newRoleId } = answers;
-  
-          // Update the employee's role in the database
           db.query(
             `UPDATE employee SET role_id = ? WHERE id = ?`,
             [newRoleId, employeeId],
@@ -84,9 +79,27 @@ function updateEmployeeRole() {
         });
     });
   }
-
-
-
+// inquirer
+//   .prompt({
+//     type: "input",
+//     name: "name",
+//     message: "What is the name of the department?",
+//   })
+//   .then(({ name }) => {
+//     connection.query(
+//       "INSERT INTO department (name) VALUES (?)",
+//       [name],
+//       (error, results, fields) => {
+//         if (error) {
+//           console.error(error);
+//           console.log("Failed to add department");
+//         } else {
+//           console.log(`Added department ${name}`);
+//         }
+//         connection.end();
+//       }
+//     );
+//   });
 function initialQ () {
 inquirer.prompt(question)
 .then(ans=>{
@@ -115,17 +128,7 @@ inquirer.prompt(question)
 
             break;
         case 'Add a department':
-            inquirer.prompt({
-              type: 'input',
-              name: 'name',
-              message: 'What is the name of the department?'
-            }).then(({ name }) => {
-              db.query('INSERT INTO department SET ?', { name }, (err, results) => {
-                if (err) throw err;
-                console.log(`${results.affectedRows} department added.`);
-                startApp();
-              });
-            });
+            addDepartment();
             break;
 
         default:
