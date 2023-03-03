@@ -79,32 +79,140 @@ function updateEmployeeRole() {
         });
     });
   }
-// inquirer
-//   .prompt({
-//     type: "input",
-//     name: "name",
-//     message: "What is the name of the department?",
-//   })
-//   .then(({ name }) => {
-//     connection.query(
-//       "INSERT INTO department (name) VALUES (?)",
-//       [name],
-//       (error, results, fields) => {
-//         if (error) {
-//           console.error(error);
-//           console.log("Failed to add department");
-//         } else {
-//           console.log(`Added department ${name}`);
-//         }
-//         connection.end();
-//       }
-//     );
-//   });
+  function addEmp() {
+    let managerList = [];
+    let roleList = [];
+    db.query(
+      "SELECT * FROM employee where manager_id is null;",
+      (err, results) => {
+        if (err) throw err;
+        managerList = results.map((employee) => ({
+          name: `${employee.first_name} ${employee.last_name}`,
+          value: employee.id,
+        }));
+        db.query("select * from role;", (err, results) => {
+          if (err) throw err;
+          roleList = results.map((role) => ({
+            name: role.title,
+            value: role.id,
+          }));
+  
+          inquirer
+            .prompt([
+              {
+                type: "input",
+                name: "first_name",
+                message: "Enter employee first name:",
+              },
+              {
+                type: "input",
+                name: "last_name",
+                message: "Enter employee last name:",
+              },
+              {
+                type: "list",
+                name: "role_id",
+                message: "Enter employee role ID:",
+                choices: roleList,
+              },
+              {
+                type: "list",
+                name: "manager_id",
+                message: "Enter employee manager ID:",
+                choices: managerList,
+              },
+            ])
+            .then((answers) => {
+              const { first_name, last_name, role_id, manager_id } = answers;
+              const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
+              db.query(
+                sql,
+                [first_name, last_name, role_id, manager_id],
+                (error, results, fields) => {
+                  if (error) console.error(error);
+                  return;
+                }
+              );
+              console.log("Employee added successfully!");
+              initialQ();
+            });
+        });
+      }
+    );
+  }
+  
+  function addDept() {
+    inquirer
+      .prompt({
+        type: "input",
+        name: "name",
+        message: "What is the name of the department?",
+      })
+      .then(({ name }) => {
+        
+        const sql = "INSERT INTO department SET ?";
+  
+        db.query(sql, { name }, (error, results, fields) => {
+          if (error) {
+            console.error(error);
+            console.log("Failed to add department");
+          } else {
+            
+            console.log(`Added department ${name}`);
+            initialQ();
+          }
+        });
+      });
+  }
+  function addRole() {
+    let departmentList = [];
+  
+    db.query("SELECT * FROM department ;", (err, results) => {
+      if (err) throw err;
+      departmentList = results.map((department) => ({
+        name: `${department.name} department`,
+        value: department.id,
+      }));
+      inquirer
+        .prompt([
+          {
+            type: "input",
+            name: "title",
+            message: "What is the role?",
+          },
+          {
+            type: "input",
+            name: "salary",
+            message: "What is the salary?",
+          },
+          {
+            type: "list",
+            name: "department",
+            choices: departmentList,
+            message: "What is the department?",
+          }
+         ] )
+        .then(({ title, salary, department }) => {
+          const sql =
+            "insert into role(title,salary,department_id)values (?,?,?);";
+          db.query(sql, [title, salary, department], (error, results, fields) => {
+            if (error) {
+              
+              console.error(error);
+              console.log("Failed to add role");
+            } else {
+              
+              console.log(`Added role ${title}}`);
+              initialQ();
+            }
+          });
+        });
+    });
+  }
 function initialQ () {
 inquirer.prompt(question)
 .then(ans=>{
     console.log(ans);
-    // ans.option === "want to try again" ? initialQ() : process.exit();
     switch (ans.option) {
         case "Want to try again?":
             initialQ()
@@ -121,14 +229,14 @@ inquirer.prompt(question)
         case "Update Employee Role":
             updateEmployeeRole();
             break;    
-        case "Add a Employee":
-            
+        case "Add Employee":
+            addEmp();
             break;
-        case "Add a Role":
-
+        case "Add Role":
+            addRole();
             break;
-        case 'Add a department':
-            addDepartment();
+        case "Add Department":
+            addDept();
             break;
 
         default:
